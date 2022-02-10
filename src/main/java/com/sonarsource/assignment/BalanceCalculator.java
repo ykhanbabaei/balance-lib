@@ -14,7 +14,7 @@ public class BalanceCalculator {
 
     private static final String  COMMAND_PRINT_DAY ="DAY";
     private static final String  COMMAND_PRINT_MONTH ="MONTH";
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/d");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/d");
 
     private final StringWriter stringWriter;
 
@@ -41,31 +41,29 @@ public class BalanceCalculator {
             stringWriter.append(calculateAmount(incomes, expenses));
         }
         else if(COMMAND_PRINT_MONTH.equals(dayMontYear)){
-            List<Balance> incomes = getAllMatchedIncomeLocalDates(()->findAllKeysForMonth(date, balanceRepository.keySetIncomes()));
-            List<Balance> expenses = getAllMatchedExpenseLocalDates(()->findAllKeysForMonth(date, balanceRepository.keySetExpense()));
+            List<Balance> incomes = findAllIncomes(()-> filterDateSetByMonth(date, balanceRepository.keySetIncomes()));
+            List<Balance> expenses = findAllExpenses(()-> filterDateSetByMonth(date, balanceRepository.keySetExpenses()));
             stringWriter.append(calculateAmount(incomes, expenses));
         }
         else{
-            List<Balance> incomes = getAllMatchedIncomeLocalDates(()->findAllKeysForYear(date, balanceRepository.keySetIncomes()));
-            List<Balance> expenses = getAllMatchedExpenseLocalDates(()->findAllKeysForYear(date, balanceRepository.keySetExpense()));
+            List<Balance> incomes = findAllIncomes(()-> filterDateSetByYear(date, balanceRepository.keySetIncomes()));
+            List<Balance> expenses = findAllExpenses(()-> filterDateSetByYear(date, balanceRepository.keySetExpenses()));
             stringWriter.append(calculateAmount(incomes, expenses));
         }
     }
 
-    private List<Balance> getAllMatchedExpenseLocalDates(Supplier<List<LocalDate>> supplier) {
-        List<LocalDate> allMatchedExpenseLocalDates = supplier.get();
-        return allMatchedExpenseLocalDates.stream().flatMap(localDate -> balanceRepository.getAllExpenses(localDate).stream()).collect(Collectors.toList());
+    private List<Balance> findAllExpenses(Supplier<List<LocalDate>> localDateSetFinder) {
+        return balanceRepository.getAllExpenses(localDateSetFinder.get()).stream().collect(Collectors.toList());
     }
 
-    private List<Balance> getAllMatchedIncomeLocalDates(Supplier<List<LocalDate>> supplier) {
-        List<LocalDate> allMatchedIncomeLocalDates = supplier.get();
-        return allMatchedIncomeLocalDates.stream().flatMap(localDate -> balanceRepository.getAllIncomes(localDate).stream()).collect(Collectors.toList());
+    private List<Balance> findAllIncomes(Supplier<List<LocalDate>> localDateSetFinder) {
+        return balanceRepository.getAllIncomes(localDateSetFinder.get()).stream().collect(Collectors.toList());
     }
 
-    private List<LocalDate> findAllKeysForMonth(String yearMonth, Set<LocalDate> keys) {
+    private static List<LocalDate> filterDateSetByMonth(String yearMonth, Set<LocalDate> dateSet) {
         List<LocalDate> allMatchingKeys = new ArrayList<>();
         LocalDate localDate = LocalDate.parse(yearMonth+"/01", formatter);//TODO fix date format
-        for (LocalDate key : keys) {
+        for (LocalDate key : dateSet) {
             if(key.getMonth()==localDate.getMonth() && key.getYear()==localDate.getYear()){
                 allMatchingKeys.add(key);
             }
@@ -73,7 +71,7 @@ public class BalanceCalculator {
         return allMatchingKeys;
     }
 
-    private List<LocalDate> findAllKeysForYear(String year, Set<LocalDate> dateSet) {
+    private static List<LocalDate> filterDateSetByYear(String year, Set<LocalDate> dateSet) {
         List<LocalDate> allMatchingDate = new ArrayList<>();
         int yearInt = Integer.parseInt(year);
         for (LocalDate key : dateSet) {

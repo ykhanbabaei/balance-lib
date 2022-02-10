@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 public class BalanceTest {
 
     @Test
-    public void testCalculateTotalPrice(){
+    public void testBalance(){
         StringWriter stringWriter = new StringWriter();
         BalanceCalculator balanceCalculator = new BalanceCalculator(stringWriter);
         balanceCalculator.handleCommand("INCOME 2020/01/01 gift 500");

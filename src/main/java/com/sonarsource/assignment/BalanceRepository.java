@@ -4,6 +4,7 @@ import com.sonarsource.assignment.model.Balance;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BalanceRepository {
 
@@ -27,8 +28,16 @@ public class BalanceRepository {
         return expenses.getOrDefault(date, new ArrayList<>());
     }
 
+    public List<Balance> getAllExpenses(List<LocalDate> dateSet) {
+        return dateSet.stream().flatMap(date->expenses.getOrDefault(date, new ArrayList<>()).stream()).collect(Collectors.toList());
+    }
+
     public List<Balance> getAllIncomes(LocalDate date) {
         return incomes.getOrDefault(date, new ArrayList<>());
+    }
+
+    public List<Balance> getAllIncomes(List<LocalDate> dateSet) {
+        return dateSet.stream().flatMap(date->incomes.getOrDefault(date, new ArrayList<>()).stream()).collect(Collectors.toList());
     }
 
     public Set<LocalDate> keySetIncomes() {
@@ -39,8 +48,5 @@ public class BalanceRepository {
         return expenses.keySet();
     }
 
-    public Set<LocalDate> keySetExpense() {
-        return expenses.keySet();
-    }
 }
 
