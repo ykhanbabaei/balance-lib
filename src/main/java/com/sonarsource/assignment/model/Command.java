@@ -1,19 +1,35 @@
 package com.sonarsource.assignment.model;
 
-import com.sonarsource.assignment.BalanceCalculator;
+import com.sonarsource.assignment.CommandHandler;
+import com.sonarsource.assignment.PrintCommandHandler;
 
 import java.util.function.BiConsumer;
 
 public enum Command {
-    EXPENSE(BalanceCalculator::handleExpense), INCOME(BalanceCalculator::handleIncome), PRINT(BalanceCalculator::handlePrint);
+    EXPENSE(CommandHandler::handleExpense), INCOME(CommandHandler::handleIncome), PRINT(CommandHandler::handlePrint);
 
-    private BiConsumer<BalanceCalculator, String[]> calculator;
+    private final BiConsumer<CommandHandler, String[]> handler;
 
-    Command(BiConsumer<BalanceCalculator, String[]> calculator) {
-        this.calculator = calculator;
+    Command(BiConsumer<CommandHandler, String[]> handler) {
+        this.handler = handler;
     }
 
-    public BiConsumer<BalanceCalculator, String[]> getCalculator() {
-        return calculator;
+    public BiConsumer<CommandHandler, String[]> getHandler() {
+        return handler;
+    }
+
+    public enum CommandPrint{
+        DAY(PrintCommandHandler::handleCommandPrintDay), YEAR(PrintCommandHandler::handleCommandPrintYear),
+        MONTH(PrintCommandHandler::handleCommandPrintMonth);
+
+        private final BiConsumer<PrintCommandHandler, String> handler;
+
+        CommandPrint(BiConsumer<PrintCommandHandler, String> handler) {
+            this.handler = handler;
+        }
+
+        public BiConsumer<PrintCommandHandler, String> getHandler() {
+            return handler;
+        }
     }
 }

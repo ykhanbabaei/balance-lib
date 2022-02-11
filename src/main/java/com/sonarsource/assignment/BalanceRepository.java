@@ -11,7 +11,6 @@ public class BalanceRepository {
     private final Map<LocalDate, List<Balance>> incomes = new HashMap<>();
     private final Map<LocalDate, List<Balance>> expenses = new HashMap<>();
 
-
     public void addIncome(Balance balance) {
         List<Balance> list = incomes.getOrDefault(balance.getLocalDate(), new ArrayList<>());
         list.add(balance);

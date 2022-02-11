@@ -11,30 +11,30 @@ public class BalanceTest {
     @Test
     public void testBalance(){
         StringWriter stringWriter = new StringWriter();
-        BalanceCalculator balanceCalculator = new BalanceCalculator(stringWriter);
-        balanceCalculator.handleCommand("INCOME 2020/01/01 gift 500");
-        balanceCalculator.handleCommand("INCOME 2020/01/01 gift 500");
-        balanceCalculator.handleCommand("INCOME 2021/01/01 gift 100");
-        balanceCalculator.handleCommand("PRINT DAY 2020/01/01");
+        CommandHandler commandHandler = new CommandHandler(stringWriter);
+        commandHandler.handleCommand("INCOME 2020/01/01 gift 500");
+        commandHandler.handleCommand("INCOME 2020/01/01 gift 500");
+        commandHandler.handleCommand("INCOME 2021/01/01 gift 100");
+        commandHandler.handleCommand("PRINT DAY 2020/01/01");
         assertEquals(stringWriter.toString(), "1000");
 
-        balanceCalculator.handleCommand("EXPENSE 2020/01/01 gift 5");
-        balanceCalculator.handleCommand("EXPENSE 2020/01/01 gift2 5");
+        commandHandler.handleCommand("EXPENSE 2020/01/01 gift 5");
+        commandHandler.handleCommand("EXPENSE 2020/01/01 gift2 5");
 
         stringWriter.getBuffer().setLength(0);
-        balanceCalculator.handleCommand("PRINT DAY 2020/01/01");
+        commandHandler.handleCommand("PRINT DAY 2020/01/01");
         assertEquals(stringWriter.toString(), "990");
 
         stringWriter.getBuffer().setLength(0);
-        balanceCalculator.handleCommand("PRINT MONTH 2021/01");
+        commandHandler.handleCommand("PRINT MONTH 2021/01");
         assertEquals(stringWriter.toString(), "100");
 
         stringWriter.getBuffer().setLength(0);
-        balanceCalculator.handleCommand("PRINT YEAR 2022");
+        commandHandler.handleCommand("PRINT YEAR 2022");
         assertEquals(stringWriter.toString(), "0");
 
         stringWriter.getBuffer().setLength(0);
-        balanceCalculator.handleCommand("PRINT DAY 2020/01/02");
+        commandHandler.handleCommand("PRINT DAY 2020/01/02");
         assertEquals(stringWriter.toString(), "0");
     }
 
