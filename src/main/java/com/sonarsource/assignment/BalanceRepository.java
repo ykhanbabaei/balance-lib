@@ -3,6 +3,8 @@ package com.sonarsource.assignment;
 import com.sonarsource.assignment.model.Balance;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,28 +25,36 @@ public class BalanceRepository {
         expenses.put(balance.getLocalDate(), list);
     }
 
-    public List<Balance> getAllExpenses(LocalDate date) {
+    public List<Balance> findAllExpenses(LocalDate date) {
         return expenses.getOrDefault(date, new ArrayList<>());
     }
 
-    public List<Balance> getAllExpenses(List<LocalDate> dateSet) {
-        return dateSet.stream().flatMap(date->expenses.getOrDefault(date, new ArrayList<>()).stream()).collect(Collectors.toList());
-    }
-
-    public List<Balance> getAllIncomes(LocalDate date) {
+    public List<Balance> findAllIncomes(LocalDate date) {
         return incomes.getOrDefault(date, new ArrayList<>());
     }
 
-    public List<Balance> getAllIncomes(List<LocalDate> dateSet) {
-        return dateSet.stream().flatMap(date->incomes.getOrDefault(date, new ArrayList<>()).stream()).collect(Collectors.toList());
+    public List<Balance> findAllIncomesByMonth(int year, Month month) {
+        return findAllIncomesByMonth(year, month, incomes.entrySet());
     }
 
-    public Set<LocalDate> keySetIncomes() {
-        return incomes.keySet();
+    private List<Balance> findAllIncomesByMonth(int year, Month month, Set<Map.Entry<LocalDate, List<Balance>>> entries) {
+        return entries.stream().filter(entry->entry.getKey().getMonth()==month && entry.getKey().getYear()==year).flatMap(entry->entry.getValue().stream()).collect(Collectors.toList());
     }
 
-    public Set<LocalDate> keySetExpenses() {
-        return expenses.keySet();
+    public List<Balance> findAllExpensesByMonth(int year, Month month) {
+        return findAllIncomesByMonth(year, month, expenses.entrySet());
+    }
+
+    private List<Balance> filterDateSetByYear(int year, Set<Map.Entry<LocalDate, List<Balance>>> entries) {
+        return entries.stream().filter(entry->entry.getKey().getYear() == year).flatMap(entry->entry.getValue().stream()).collect(Collectors.toList());
+    }
+
+    public List<Balance> findAllIncomesByYear(int year) {
+        return filterDateSetByYear(year, incomes.entrySet());
+    }
+
+    public List<Balance> findAllExpensesByYear(int year) {
+        return filterDateSetByYear(year, expenses.entrySet());
     }
 
 }
